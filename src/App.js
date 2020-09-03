@@ -4,17 +4,17 @@ import api from './services/api';
 import './styles.css';
 
 function App() {
-  const [ repositories, setRepositories ] = useState([]);
+  const [repositories, setRepositories] = useState([]);
 
   useEffect(() => {
     api.get('repositories').then((response) => {
       setRepositories(response.data);
     });
-  }, [repositories]);
+  }, []);
 
   async function handleAddRepository() {
     const response = await api.post('repositories', {
-      title: 'Javascript'
+      title: 'Javascript',
     });
 
     const newRepositorie = response.data;
@@ -23,7 +23,12 @@ function App() {
   }
 
   async function handleRemoveRepository(id) {
-    await api.delete(`repositories/${id}`, {})
+    await api.delete(`repositories/${id}`);
+
+    const index = repositories.findIndex((repositorie) => repositorie.id === id);
+    repositories.splice(index, 1);
+
+    setRepositories([...repositories]);
   }
 
   return (
@@ -32,7 +37,9 @@ function App() {
         {repositories.map((repositorie) => (
           <li key={repositorie.id}>
             {repositorie.title}
-            <button onClick={() => handleRemoveRepository(repositorie.id)}>Remover</button>
+            <button onClick={() => handleRemoveRepository(repositorie.id)}>
+              Remover
+            </button>
           </li>
         ))}
       </ul>
